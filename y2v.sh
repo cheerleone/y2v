@@ -2,7 +2,7 @@
 
 :<<BLOCK_COMMENT
 
-  Youtube to VLC v3.see.below
+  Youtube to VLC
 
   License: GPL-V2.0
 
@@ -32,14 +32,11 @@ BLOCK_COMMENT
 
   # version
 
-VERSION="0.2.0.beta";                          # major.minor.point.stage
-
-
+VERSION="0.3.0.beta";                          # major.minor.point.stage
 
   # global variables
 
 VIDEO_URL="$1";                                # URL to video
-Skip_Dep_Check="YES";                          # YES=Skip, NO=Check. Skip checking for dependencies - helps on slower systems
 Open_VLC_Fullscreen="True";                    # True = fullscreen, False = @ defaultl size in a window.
 
 SPINDEX=0;                                     # Spinner Index - index into which character to use
@@ -65,31 +62,18 @@ function Call_VLC {
   vlc $VIDEO_URL $fs --play-and-exit &> /dev/null;
 }
 
-function Check_Deps() {
-  local XSel_Status=1;
-  local VLC_Status=1;
-
-  if [ "$Skip_Dep_Check" == "NO" ]; then
-    echo "Checking Dependencies.."
-
-    rpm -qa | grep "xsel-" > /dev/null;
-    XSel_Status=$?;
-  
-    rpm -qa | grep "vlc-core-" > /dev/null;
-    VLC_Status=$?;
-  
-    if [ "$XSel_Status" -ne "0" ]; then
-      echo "This script Depends on xsel";
-      exit 1;
-    fi
-  
-    if [ "$VLC_Status" -ne "0" ]; then
-      echo "This script Depends on VLC";
-      exit 1;
-    fi
+function Check_Deps2() {
+  xsel --version > /dev/null;
+  if [ "$?" -ne "0" ]; then
+    echo -e "$pc\033[F $pc\033[2K \b\b XSEL does not appear to be installed"
+    exit 1
+  fi
+  vlc --version &> /dev/null
+  if [ "$?" -ne "0" ]; then
+    echo -e "$pc\033[F $pc\033[2K \bVLC does not appear to be installed"
+    exit 1
   fi
 }
-
 
 function Advance_Spinner {  
   echo -ne "${CHARS:$SPINDEX:1} $pc\033[0K\r";
@@ -103,7 +87,6 @@ function Poll_Clipboard {
   local CLIP_CURRENT="";
   local CLIP_CHECK="hsid8fyuib83riwk3urh";
   local Poll_String="Polling for Youtube URL's on X Clipboard..   (CTRL+C to stop)";
-  echo foo | xsel -i;
   echo "$Poll_String";
   while [ 1 = 1 ]; do
     CLIP_CURRENT=$(xsel -o);
@@ -122,16 +105,16 @@ function Poll_Clipboard {
 
 function control_c() {
   setterm -cursor on          # unhide cursor
+  echo -ne "$pc\033[0K\r";    # return cursor to start of line - hides spinner character
   exit $1;
 }
 
 #-------------------------------------------------------------------------------
 
 function _Main {
+  Check_Deps2;
   setterm -cursor off;          # hide cursor - makes spinner look better.
   trap control_c SIGINT;        # unhide cursor when ctrl+c is used to exit.
-
-  Check_Deps;
   Poll_Clipboard;
 }
 
