@@ -1,5 +1,5 @@
-y2v
-===
+y2v YouTube to VLC
+==================
 
 ShellScript to open YouTube Videos in VLC with a single click.
 
