@@ -12,6 +12,7 @@ Thus quick access to new links allows me to digest.
 Dependencies
 ------------
 xsel - used to capture text from the clipboard.
+
 vlc  - used to display your video!
 
 -Enjoy.
