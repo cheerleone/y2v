@@ -15,5 +15,10 @@ xsel - used to capture text from the clipboard.
 
 vlc  - used to display your video!
 
+Known Issues
+------------
+
+Pausing VLC for an exsessive time will cause youtube to disconnect, VLC will appear to cut-short the video.
+
 -Enjoy.
 
